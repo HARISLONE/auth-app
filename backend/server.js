@@ -48,7 +48,7 @@ function authenticateToken(req, res, next) {
   }
 
   if (blacklist.has(token)) {
-    return res.status(401).json({
+    return res.status(403).json({
       message: "Token invalidated",
     });
   }

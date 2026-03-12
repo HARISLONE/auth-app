@@ -31,15 +31,18 @@ function Dashboard() {
 
     fetchProfile();
 
-  }, []);
+  }, [navigate, token]);
 
   const handleLogout = async () => {
 
+  try {
     await logoutUser(token);
+  } catch (err) {
+    console.error("Logout error:", err);
+  }
 
-    localStorage.removeItem("token");
-
-    navigate("/login");
+  localStorage.removeItem("token");
+  navigate("/login");
 
   };
 

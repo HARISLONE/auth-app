@@ -1,18 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../api/api";
 
 function Login() {
-
+  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
 
     e.preventDefault();
+
+    // CLIENT SIDE VALIDATION
+    if (!username || !password) {
+      setError("All fields are required");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
 
     try {
 
@@ -22,9 +45,13 @@ function Login() {
 
       navigate("/dashboard");
 
-    } catch {
+    } catch (err) {
 
-      setError("Invalid credentials");
+      setError(err.response?.data?.message || "Login failed");
+
+    } finally {
+
+      setLoading(false);
 
     }
 
@@ -48,7 +75,9 @@ function Login() {
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <button type="submit">Login</button>
+      <button type="submit" disabled={loading}>
+        {loading ? "Logging in..." : "Login"}
+      </button>
 
     </form>
 
